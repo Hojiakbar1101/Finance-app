@@ -1,149 +1,185 @@
-project:
-  title: "💰 Finance App – Финансовое приложение"
-  description: >
-    Приложение **Finance App** — это простая, но мощная система управления пользовательскими финансами.
-    Реализовано с использованием **Spring Boot**, **PostgreSQL**, с возможностью масштабирования и контейнеризации с помощью **Docker**.
+# 💰 Finance App – Финансовое приложение
 
-overview:
-  goals:
-    - Ведение учета пользователей и их текущего баланса
-    - Отслеживание транзакций пользователей (пополнение / списание)
-    - Использование PostgreSQL в качестве хранилища данных
-    - Поддержка контейнеризации с Docker
-  audience: Финансовые стартапы, банковские платформы, учетные системы
+![Java](https://img.shields.io/badge/Java-17+-orange?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3%2B-brightgreen?logo=spring)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-stack:
-  language: Java 17+
-  framework: Spring Boot 3+
-  database: PostgreSQL
-  orm: Hibernate (JPA)
-  build_tool: Maven
-  containerization: Docker, Docker Compose
+---
 
-structure:
-  tree: |
-    finance_app/
-    ├── src/
-    │   └── main/
-    │       ├── java/com/example/finance_app/
-    │       │   ├── controller/
-    │       │   ├── model/
-    │       │   ├── repository/
-    │       │   ├── service/
-    │       │   └── FinanceAppApplication.java
-    │       └── resources/
-    │           ├── application.properties
-    │           └── data.sql
-    ├── Dockerfile
-    ├── docker-compose.yml
-    └── README.md
+## 📌 Описание проекта
 
-configuration:
-  application.properties:
-    server.port: 9090
-    spring.datasource.url: jdbc:postgresql://localhost:5432/finance
-    spring.datasource.username: postgres
-    spring.datasource.password: 1101samon
-    spring.jpa.hibernate.ddl-auto: update
-    spring.jpa.show-sql: true
-    spring.jpa.properties.hibernate.format_sql: true
+**Finance App** — это легкое, но надежное REST-приложение для управления финансами пользователей. Подходит для стартапов, банковских платформ или любых систем, где нужно вести учёт баланса и транзакций пользователей.
 
-sql:
-  schema: |
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255),
-        balance DOUBLE PRECISION
-    );
+**Ключевые функции:**
+- Управление пользователями и их балансом.
+- Проведение транзакций (пополнение / списание).
+- Сохранение данных в PostgreSQL.
+- Лёгкое развертывание с Docker.
 
-    CREATE TABLE IF NOT EXISTS transaction (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id),
-        amount DOUBLE PRECISION,
-        timestamp TIMESTAMP
-    );
-  mock_data: |
-    INSERT INTO users(name, balance) VALUES ('Ali', 1000), ('Vali', 500);
+---
 
-    INSERT INTO transaction(user_id, amount, timestamp)
-    VALUES 
-      (1, 200.0, NOW()),
-      (2, -100.0, NOW());
+## 🚀 Используемые технологии
 
-docker:
-  dockerfile: |
-    FROM openjdk:17-jdk-alpine
-    VOLUME /tmp
-    COPY target/finance_app.jar app.jar
-    ENTRYPOINT ["java","-jar","/app.jar"]
-  compose: |
-    version: '3.8'
+| Категория         | Технология             |
+|------------------|------------------------|
+| Язык             | Java 17+               |
+| Фреймворк        | Spring Boot 3+         |
+| ORM              | Hibernate (JPA)        |
+| База данных      | PostgreSQL             |
+| Сборщик          | Maven                  |
+| Контейнеризация  | Docker, Docker Compose |
 
-    services:
-      postgres:
-        image: postgres:15
-        environment:
-          POSTGRES_DB: finance
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1101samon
-        ports:
-          - "5432:5432"
-        volumes:
-          - postgres_data:/var/lib/postgresql/data
+---
 
-      finance_app:
-        build: .
-        ports:
-          - "9090:9090"
-        depends_on:
-          - postgres
-        environment:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/finance
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: 1101samon
+## 🗂️ Структура проекта
 
+finance_app/
+├── src/
+│ └── main/
+│ ├── java/com/example/finance_app/
+│ │ ├── controller/
+│ │ ├── model/
+│ │ ├── repository/
+│ │ ├── service/
+│ │ └── FinanceAppApplication.java
+│ └── resources/
+│ ├── application.properties
+│ └── data.sql
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+
+yaml
+Copy
+Edit
+
+---
+
+## ⚙️ Конфигурация приложения
+
+`application.properties`
+
+```properties
+server.port=9090
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/finance
+spring.datasource.username=postgres
+spring.datasource.password=1101samon
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+🧾 SQL Скрипты
+Структура таблиц:
+
+sql
+Copy
+Edit
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    balance DOUBLE PRECISION
+);
+
+CREATE TABLE IF NOT EXISTS transaction (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    amount DOUBLE PRECISION,
+    timestamp TIMESTAMP
+);
+Тестовые данные:
+
+sql
+Copy
+Edit
+INSERT INTO users(name, balance) VALUES ('Ali', 1000), ('Vali', 500);
+
+INSERT INTO transaction(user_id, amount, timestamp)
+VALUES 
+  (1, 200.0, NOW()),
+  (2, -100.0, NOW());
+🐳 Docker-интеграция
+Dockerfile
+
+dockerfile
+Copy
+Edit
+FROM openjdk:17-jdk-alpine
+VOLUME /tmp
+COPY target/finance_app.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+docker-compose.yml
+
+yaml
+Copy
+Edit
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: finance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1101samon
+    ports:
+      - "5432:5432"
     volumes:
-      postgres_data:
+      - postgres_data:/var/lib/postgresql/data
 
-build_and_run:
-  prerequisites:
-    - Java 17+
-    - Maven
-    - Docker & Docker Compose
-  manual:
-    - mvn clean install
-    - java -jar target/finance_app.jar
-  docker:
-    - docker-compose up --build
-  result:
-    api_url: http://localhost:9090
+  finance_app:
+    build: .
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/finance
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1101samon
 
-api_routes:
-  public:
-    - GET /users — список всех пользователей
-    - POST /users — создать нового пользователя
-    - GET /transactions — список всех транзакций
-    - POST /transactions — добавить новую транзакцию
-  note: >
-    Реализация маршрутов зависит от контроллеров и может быть расширена согласно требованиям.
+volumes:
+  postgres_data:
+🛠️ Сборка и запуск
+🔧 Требования
+Java 17+
 
-author:
-  name: Saidrasulov Hojiakbar
-  role: Java Backend-разработчик
-  email: saidrasulovhojiakbar7@gmail.com
-  phone: +998-88-521-30-08
-  github: https://github.com/Hojiakbar1101
-  location: Tashkent, Uzbekistan
+Maven
 
-license:
-  type: MIT
-  notice: >
-    Вы можете свободно использовать, копировать, изменять и распространять данный проект.
-    Пожалуйста, указывайте авторство при использовании в публичных или коммерческих целях.
+Docker & Docker Compose
 
-credits:
-  thanks:
-    - Spring Boot сообществу
-    - PostgreSQL команде
-    - JetBrains (IntelliJ IDEA)
-    - Docker Community
+🚀 Сборка вручную
+bash
+Copy
+Edit
+mvn clean install
+java -jar target/finance_app.jar
+🐳 Запуск через Docker
+bash
+Copy
+Edit
+docker-compose up --build
+После запуска, API будет доступен по адресу:
+📍 http://localhost:9090
+
+📬 REST API Роуты
+Метод	Endpoint	Описание
+GET	/users	Получить всех пользователей
+POST	/users	Создать нового пользователя
+GET	/transactions	Получить все транзакции
+POST	/transactions	Добавить новую транзакцию
+GET	/transactions/byUser/{userId}	Поиск по пользователю
+GET	/transactions/byDate?start=...&end=...	Поиск по дате
+
+🔐 Безопасность
+❗ В текущей версии аутентификация через JWT не реализована, но структура проекта легко расширяется для добавления Spring Security.
+
+👨‍💻 Автор проекта
+Saidrasulov Hojiakbar
+Java Backend-разработчик
+📧 Email: saidrasulovhojiakbar7@gmail.com
+📱 Телефон: +998-88-521-30-08
+🌍 Город: Ташкент, Узбекистан
+🔗 GitHub: github.com/Hojiakbar1101
